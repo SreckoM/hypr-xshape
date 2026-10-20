@@ -1,0 +1,10 @@
+[repository]
+name = "hypr-xshape"
+authors = ["SreckoM"]
+commit_pins = []
+
+[hypr-xshape]
+description = "Clip XWayland windows to their X11 SHAPE bounding region (fixes black pie menus in Modo, Houdini, ...)"
+authors = ["SreckoM"]
+output = "hypr-xshape.so"
+build = ["make all"]
