@@ -46,6 +46,42 @@ exec-once = hyprpm reload -n
 
 After a Hyprland update, run `hyprpm update`.
 
+### Notes for Omarchy
+
+Omarchy's Hyprland config is native Lua (`~/.config/hypr/*.lua`), not the
+`hyprland.conf` hyprlang syntax the steps above assume. A few translations:
+
+- **Autostart.** There's no `hyprland.conf` to add `exec-once` to. In
+  `~/.config/hypr/autostart.lua` (or any file it loads), run:
+
+  ```lua
+  o.exec_on_start("hyprpm reload -n")
+  ```
+
+  (`o.exec_on_start` is Omarchy's helper around `hl.on("hyprland.start", ...)`.)
+
+- **The optional window rule below** becomes, e.g. in `~/.config/hypr/hyprland.lua`:
+
+  ```lua
+  o.window({ class = "^(Houdini FX|nexus)$", title = "^(|Houdini FX|nexus|modo)$" }, {
+    no_blur = true,
+    no_anim = true,
+  })
+  ```
+
+- **First-run `hyprpm update` bug.** On at least one Omarchy install, the first
+  `hyprpm update` created its per-user cache dir
+  (`/var/cache/hyprpm/<user>`) owned by `root`, which then made every
+  `hyprpm add`/`enable` afterwards fail with `Failed to write plugin state`.
+  Fix once with:
+
+  ```sh
+  sudo chown -R "$USER:$USER" "/var/cache/hyprpm/$USER"
+  ```
+
+  This may be an upstream hyprpm bug rather than Omarchy-specific; flagging it
+  here since the official install steps don't mention it.
+
 ### Manual build
 
 Dependencies:
@@ -79,7 +115,7 @@ windowrule = match:class ^(Houdini FX|nexus)$, match:title ^(|Houdini FX|nexus|m
 ## Status
 
 - Tested on Hyprland 0.53.3 (Ubuntu package) with an NVIDIA GPU, using Modo 17.1 and Houdini 22.
-- Hyprland 0.54+ changed the plugin event API. The code detects this at build time and has a path for it, written against the 0.56.2 source. That path has not been built or tested yet.
+- Also built and tested on Hyprland 0.56.2 (Omarchy/Arch), confirmed fixing Houdini 22's pie menu. The 0.54+ event-API code path is no longer untested.
 - It relies on Hyprland internals, so a future Hyprland version may need code changes.
 
 ## AI disclosure
